@@ -1,0 +1,23 @@
+/* Home Page Carousel */
+
+div{
+    display: block;
+}
+
+div.carousel {   
+	height: 400px;	
+}
+
+div.carousel .item,
+div.carousel .item.active,
+div.carousel .carousel-inner {
+    height: 100%;
+}
+
+
+div.carousel .lite {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}

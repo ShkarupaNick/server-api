@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="3112894154">
+    <data-source source="LOCAL" name="PostgreSQL - schedule@localhost" uuid="461c0ee2-c292-4624-8a00-7982ae9294c6">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/schedule</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="PostgreSQL - schedule@couchtalks.com" uuid="1e538e39-0e87-40f5-8dbe-0875a9371f72">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://couchtalks.com:5432/schedule</jdbc-url>
+    </data-source>
+  </component>
+</project>

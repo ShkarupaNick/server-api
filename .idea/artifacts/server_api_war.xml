@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="server-api:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="couchtalks.war">
+      <element id="artifact" artifact-name="server-api:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http auto-config='true' disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint">
+
+        <intercept-url pattern="/list"      access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/user/list" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/profile" access="permitAll"/>
+
+
+        <csrf disabled="true"/>
+        <!--form-login login-processing-url="/login" authentication-failure-url="/index"/-->
+        <form-login  default-target-url="/index"  login-processing-url="/login" username-parameter="username" password-parameter="password"/>
+    </http>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="userDetailsServiceImpl">
+            <password-encoder ref="encoder"></password-encoder>
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="userDetailsServiceImpl"
+                class="com.couchtalks.service.impl.UserDetailsServiceImpl"></beans:bean>
+
+    <beans:bean id="encoder"
+                class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+        <beans:constructor-arg name="strength" value="11"/>
+    </beans:bean>
+
+    <beans:bean id="authenticationEntryPoint" class="com.couchtalks.MyAuthenticationEntryPoint"/>
+</beans:beans>

@@ -261,7 +261,7 @@ footer {
 
 /*profile*/
 
-
+/*
 .btn-file {
     position: relative;
     overflow: hidden;
@@ -282,7 +282,27 @@ footer {
     display: block;
 }
 
-.avatar{
-    width:100px;
-    height:100px;
+*/
+
+#fileselector {
+    margin: 10px;
 }
+#upload-file-selector {
+    display:none;
+}
+.margin-correction {
+    margin-right: 10px;
+}
+
+.img-avatar{
+     margin-bottom: 5px;
+     width: 172px;
+}
+
+.avatar{
+    text-align: center;
+}
+
+
+
+

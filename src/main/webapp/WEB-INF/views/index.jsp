@@ -127,7 +127,7 @@
                                             <p class="text-muted small">${user.email}</p>
                                             <div class="divider">
                                             </div>
-                                            <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
+                                            <a href="/profile" class="btn btn-primary btn-sm active">View Profile</a>
                                         </div>
                                     </div>
                                 </div>

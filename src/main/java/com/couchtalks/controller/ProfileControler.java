@@ -9,10 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -26,7 +25,6 @@ import java.util.Base64;
 public class ProfileControler {
 
     private final static Logger logger = Logger.getLogger(ProfileControler.class);
-
     @Autowired
     private UserService userService;
     @Autowired
@@ -38,56 +36,39 @@ public class ProfileControler {
         User user;
         if (principal != null) {
             user = userService.findByUsername(principal.getName());
+            user.setRepeatPassword(user.getPassword());
         } else {
             user = new User();
         }
+
+
         model.addAttribute("userForm", user);
-        return "profile";
-    }
 
-    @RequestMapping(value = "/loadavatar", method = RequestMethod.POST, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String loadAvatar(/*@RequestParam("profilePicture") MultipartFile profilePicture,*/@RequestParam("userForm") User userForm, Model model, Principal principal, BindingResult bindingResult) {
+       /* model.addAttribute("profilePicture", user.getProfilePicture()!=null?new String(user.getProfilePicture()):defaultProfileImage);*/
 
-        if (bindingResult.hasErrors()) {
-            return "profile";
-        }
-
-        User user = null;
-        if (principal != null) {
-            user = userService.findByUsername(principal.getName());
-            if (null != userForm.getProfilePicture()) {
-                try {
-                    byte[] base64 = Base64.getEncoder().encode(userForm.getProfilePictureFile().getBytes());
-                    String base64DataString = new String(base64, "UTF-8");
-                    model.addAttribute("user_avatar", base64DataString);
-                    user.setProfilePicture(userForm.getProfilePicture());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            model.addAttribute("user", user);
-        }
-
-        userService.save(user);
         return "profile";
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.POST, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("userForm") User userForm, Model model, Principal principal, BindingResult bindingResult) {
-        User user = null;
-        if (principal != null) {
-            user = userService.findByUsername(principal.getName());
-            user.setEmail(userForm.getEmail());
-            user.setPassword(userForm.getPassword());
-            user.setUsername(userForm.getUsername());
-            model.addAttribute("user", user);
-        }
-        validator.validate(userForm, bindingResult);
+    public String singleFileUpload(@ModelAttribute("userForm") User userForm, Model model, Principal principal, BindingResult bindingResult) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "profile";
         }
-        userService.save(user);
+        User user = null;
+        if (principal != null) {
+            user = userService.findByUsername(principal.getName());
+            logger.debug("User from DB: "+ user);
+            user.setEmail(userForm.getEmail());
+            user.setUsername(userForm.getUsername());
+            if (null != userForm.getProfilePictureFile()) {
+                byte[] base64 = Base64.getEncoder().encode(userForm.getProfilePictureFile().getBytes());
+                user.setProfilePicture(base64);
+            }
+            logger.debug("User from Form: "+ user);
+            model.addAttribute("userForm", user);
+        }
+        userService.update(user);
         return "profile";
     }
 }

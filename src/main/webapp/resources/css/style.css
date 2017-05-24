@@ -303,6 +303,17 @@ footer {
     text-align: center;
 }
 
+.comment{
+    padding:0 0;
+}
 
+.comment-image{
+    width: 11.333333%;
+}
 
+.comment-avatar {
+   border-radius: 50%;
+   height: 60px;
+   width: 60px;
+}
 

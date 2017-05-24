@@ -102,11 +102,12 @@
                         <h3 class="text-center">Sign up for free!</h3>
                     </div>
                 </div>
+                <form:form method="POST" role="form" modelAttribute="userForm">
+
                 <div class="panel-body">
                     <div class="col-md-6 col-sm-6 col-md-6 separator login-box">
                         <h4 class="text-left">Create new account</h4>
                         <br>
-                        <form:form method="POST" role="form" modelAttribute="userForm">
                             <spring:bind path="username">
                                 <form:errors path="username" class="error-text"></form:errors>
                                 <div class="input-group ${status.error ? 'has-error' : ''}">
@@ -148,9 +149,6 @@
                                                 placeholder="Repeat password"></form:input>
                                 </div>
                             </spring:bind>
-                            <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-
-                        </form:form>
 
                     </div>
 
@@ -167,10 +165,12 @@
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-7">
-                            <button type="button" class="btn btn-labeled pull-right">Sign Up</button>
+                            <button type="submit" class="btn btn-labeled pull-right">Sign Up</button>
                         </div>
                     </div>
                 </div>
+                </form:form>
+
             </div>
         </div>
     </div>

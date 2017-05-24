@@ -15,25 +15,25 @@ import java.util.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "id",
-    "url",
-    "name",
-    "type",
-    "language",
-    "genres",
-    "status",
-    "runtime",
-    "premiered",
-    "schedule",
-    "rating",
-    "weight",
-    "network",
-    "webChannel",
-    "externals",
-    "image",
-    "summary",
-    "updated",
-    "_links"
+        "id",
+        "url",
+        "name",
+        "type",
+        "language",
+        "genres",
+        "status",
+        "runtime",
+        "premiered",
+        "schedule",
+        "rating",
+        "weight",
+        "network",
+        "webChannel",
+        "externals",
+        "image",
+        "summary",
+        "updated",
+        "_links"
 })
 
 
@@ -42,14 +42,14 @@ public class Show implements Serializable {
 
     @JsonIgnore
     @Id
-    @GeneratedValue( generator="uuid" )
+    @GeneratedValue(generator = "uuid")
     @GenericGenerator(
-            name="uuid",
-            strategy="org.hibernate.id.UUIDGenerator",
+            name = "uuid",
+            strategy = "org.hibernate.id.UUIDGenerator",
             parameters = {
                     @org.hibernate.annotations.Parameter(
-                            name="uuid_gen_strategy_class",
-                            value="org.hibernate.id.uuid.CustomVersionOneStrategy"
+                            name = "uuid_gen_strategy_class",
+                            value = "org.hibernate.id.uuid.CustomVersionOneStrategy"
                     )
             }
     )
@@ -68,9 +68,16 @@ public class Show implements Serializable {
     private String language;
 
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    /*@ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
+    @JsonProperty("genres")*/
+
     @JsonProperty("genres")
+    @ElementCollection
+    @CollectionTable(
+            name="show_genres",
+            joinColumns=@JoinColumn(name="show_uuid")
+    )
     private List<String> genres = new ArrayList<String>();
 
     @JsonProperty("status")
@@ -82,26 +89,26 @@ public class Show implements Serializable {
 
 
     @JsonProperty("schedule")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="schedule_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "schedule_uuid", referencedColumnName = "uuid")
     private Schedule schedule;
 
     @JsonProperty("rating")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="rating_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "rating_uuid", referencedColumnName = "uuid")
     private Rating rating;
 
     @JsonProperty("weight")
     private Integer weight;
     @JsonProperty("network")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="network_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "network_uuid", referencedColumnName = "uuid")
     private Network network;
 
     @JsonIgnore
@@ -111,18 +118,18 @@ public class Show implements Serializable {
 
 
     @JsonProperty("externals")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="externals_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "externals_uuid", referencedColumnName = "uuid")
     private Externals externals;
 
 
     @JsonProperty("image")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="image_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "image_uuid", referencedColumnName = "uuid")
     private Image image;
 
     @JsonProperty("summary")
@@ -133,10 +140,10 @@ public class Show implements Serializable {
 
 
     @JsonProperty("_links")
-    @ManyToOne(optional=true, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = true, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-    @JoinColumn(name="_links_uuid",referencedColumnName="uuid")
+    @JoinColumn(name = "_links_uuid", referencedColumnName = "uuid")
 
     private Links _links;
     @JsonIgnore
@@ -144,9 +151,7 @@ public class Show implements Serializable {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     @JsonProperty("id")
     public Integer getId() {
@@ -154,9 +159,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     @JsonProperty("id")
     public void setId(Integer id) {
@@ -164,9 +167,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The url
+     * @return The url
      */
     @JsonProperty("url")
     public String getUrl() {
@@ -174,9 +175,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param url
-     *     The url
+     * @param url The url
      */
     @JsonProperty("url")
     public void setUrl(String url) {
@@ -184,9 +183,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     @JsonProperty("name")
     public String getName() {
@@ -194,9 +191,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     @JsonProperty("name")
     public void setName(String name) {
@@ -204,9 +199,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The type
+     * @return The type
      */
     @JsonProperty("type")
     public String getType() {
@@ -214,9 +207,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param type
-     *     The type
+     * @param type The type
      */
     @JsonProperty("type")
     public void setType(String type) {
@@ -224,9 +215,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The language
+     * @return The language
      */
     @JsonProperty("language")
     public String getLanguage() {
@@ -234,9 +223,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param language
-     *     The language
+     * @param language The language
      */
     @JsonProperty("language")
     public void setLanguage(String language) {
@@ -244,9 +231,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The genres
+     * @return The genres
      */
     @JsonProperty("genres")
     public List<String> getGenres() {
@@ -254,9 +239,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param genres
-     *     The genres
+     * @param genres The genres
      */
     @JsonProperty("genres")
     public void setGenres(List<String> genres) {
@@ -264,9 +247,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The status
+     * @return The status
      */
     @JsonProperty("status")
     public String getStatus() {
@@ -274,9 +255,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param status
-     *     The status
+     * @param status The status
      */
     @JsonProperty("status")
     public void setStatus(String status) {
@@ -284,9 +263,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The runtime
+     * @return The runtime
      */
     @JsonProperty("runtime")
     public Integer getRuntime() {
@@ -294,9 +271,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param runtime
-     *     The runtime
+     * @param runtime The runtime
      */
     @JsonProperty("runtime")
     public void setRuntime(Integer runtime) {
@@ -304,9 +279,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The premiered
+     * @return The premiered
      */
     @JsonProperty("premiered")
     public String getPremiered() {
@@ -314,9 +287,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param premiered
-     *     The premiered
+     * @param premiered The premiered
      */
     @JsonProperty("premiered")
     public void setPremiered(String premiered) {
@@ -324,9 +295,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The schedule
+     * @return The schedule
      */
     @JsonProperty("schedule")
     public Schedule getSchedule() {
@@ -334,9 +303,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param schedule
-     *     The schedule
+     * @param schedule The schedule
      */
     @JsonProperty("schedule")
     public void setSchedule(Schedule schedule) {
@@ -344,9 +311,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The rating
+     * @return The rating
      */
     @JsonProperty("rating")
     public Rating getRating() {
@@ -354,9 +319,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param rating
-     *     The rating
+     * @param rating The rating
      */
     @JsonProperty("rating")
     public void setRating(Rating rating) {
@@ -364,9 +327,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The weight
+     * @return The weight
      */
     @JsonProperty("weight")
     public Integer getWeight() {
@@ -374,9 +335,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param weight
-     *     The weight
+     * @param weight The weight
      */
     @JsonProperty("weight")
     public void setWeight(Integer weight) {
@@ -384,9 +343,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The network
+     * @return The network
      */
     @JsonProperty("network")
     public Network getNetwork() {
@@ -394,9 +351,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param network
-     *     The network
+     * @param network The network
      */
     @JsonProperty("network")
     public void setNetwork(Network network) {
@@ -404,9 +359,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The webChannel
+     * @return The webChannel
      */
     @JsonProperty("webChannel")
     public Object getWebChannel() {
@@ -414,9 +367,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param webChannel
-     *     The webChannel
+     * @param webChannel The webChannel
      */
     @JsonProperty("webChannel")
     public void setWebChannel(Object webChannel) {
@@ -424,9 +375,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The externals
+     * @return The externals
      */
     @JsonProperty("externals")
     public Externals getExternals() {
@@ -434,9 +383,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param externals
-     *     The externals
+     * @param externals The externals
      */
     @JsonProperty("externals")
     public void setExternals(Externals externals) {
@@ -444,9 +391,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The image
+     * @return The image
      */
     @JsonProperty("image")
 
@@ -455,9 +400,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param image
-     *     The image
+     * @param image The image
      */
     @JsonProperty("image")
     public void setImage(Image image) {
@@ -465,9 +408,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The summary
+     * @return The summary
      */
     @JsonProperty("summary")
     public String getSummary() {
@@ -475,9 +416,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param summary
-     *     The summary
+     * @param summary The summary
      */
     @JsonProperty("summary")
     public void setSummary(String summary) {
@@ -485,9 +424,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The updated
+     * @return The updated
      */
     @JsonProperty("updated")
     public Integer getUpdated() {
@@ -495,9 +432,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param updated
-     *     The updated
+     * @param updated The updated
      */
     @JsonProperty("updated")
     public void setUpdated(Integer updated) {
@@ -505,9 +440,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     *     The links
+     * @return The links
      */
     @JsonProperty("_links")
     public Links getLinks() {
@@ -515,9 +448,7 @@ public class Show implements Serializable {
     }
 
     /**
-     * 
-     * @param links
-     *     The _links
+     * @param links The _links
      */
     @JsonProperty("_links")
     public void setLinks(Links links) {

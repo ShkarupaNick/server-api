@@ -33,7 +33,7 @@ public class RegistrationValidator implements Validator {
 
         User user = (User) target;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "Required");
-        if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
+        if (user.getUsername().length() < 3 || user.getUsername().length() > 32) {
             errors.rejectValue("username", "Size.userForm.username");
         }
         if (userService.findByUsername(user.getUsername()) != null) {
@@ -41,7 +41,7 @@ public class RegistrationValidator implements Validator {
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "Required");
-        if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
+        if (user.getPassword().length() < 6 || user.getPassword().length() > 32) {
             errors.rejectValue("password", "Size.userForm.password");
         }
 

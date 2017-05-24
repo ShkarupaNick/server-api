@@ -9,14 +9,20 @@
 
     <http auto-config='true' disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint">
 
-        <intercept-url pattern="/list"      access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/list" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')"/>
         <intercept-url pattern="/user/list" access="hasRole('ROLE_ADMIN')"/>
-        <intercept-url pattern="/profile" access="permitAll"/>
+        <intercept-url pattern="/profile" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')"/>
 
 
         <csrf disabled="true"/>
         <!--form-login login-processing-url="/login" authentication-failure-url="/index"/-->
-        <form-login  default-target-url="/index"  login-processing-url="/login" username-parameter="username" password-parameter="password"/>
+        <form-login default-target-url="/" authentication-failure-url="/index" login-processing-url="/login"
+                    username-parameter="username" password-parameter="password"/>
+        <logout
+                logout-success-url="/"
+                logout-url="/logout"
+                delete-cookies="JSESSIONID"/>
+
     </http>
 
     <authentication-manager alias="authenticationManager">

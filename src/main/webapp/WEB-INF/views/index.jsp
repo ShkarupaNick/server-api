@@ -33,125 +33,9 @@
     <![endif]-->
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#responsive-menu">
-                <span class="sr-only">Navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">CouchTalks</a>
-        </div>
-        <div class="collapse navbar-collapse" id="responsive-menu">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Shedule</a></li>
-                <li><a href="#">Browse</a></li>
-                <li><a>|</a></li>
 
-                <sec:authorize access="isAnonymous()">
+<jsp:include page="nav-bar.jsp"/>
 
-                <li><a href="registration">Sign up</a></li>
-
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Sign in</b> <span
-                            class="caret"></span></a>
-                    <ul id="login-dp" class="dropdown-menu">
-                        <li>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    Login via
-                                    <div class="social-buttons">
-                                        <a href="#" class="btn btn-fb"><i class="fa fa-facebook"></i> Facebook</a>
-                                        <a href="#" class="btn btn-tw"><i class="fa fa-twitter"></i> Twitter</a>
-                                    </div>
-                                    or
-
-                                    <form:form method="POST" class="form" role="form" action="login"
-                                               modelAttribute="userForm" accept-charset="UTF-8" id="login-nav">
-
-                                        <spring:bind path="username">
-                                            <div class="form-group">
-                                                <label class="sr-only" for="exampleInputLogin2">username</label>
-                                                <input id="exampleInputLogin2" name="username" type="text"
-                                                       class="form-control" placeholder="Username" autofocus="true"
-                                                       required>
-                                            </div>
-                                        </spring:bind>
-
-                                        <spring:bind path="password">
-                                            <div class="form-group">
-                                                <label class="sr-only" for="exampleInputPassword2">Password</label>
-                                                <input name="password" type="password" class="form-control"
-                                                       id="exampleInputPassword2"
-                                                       placeholder="Password" required>
-                                                <div class="help-block text-right"><a href="">Forget the password ?</a>
-                                                </div>
-                                            </div>
-                                        </spring:bind>
-
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-                                        </div>
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox"> keep me logged-in
-                                            </label>
-                                        </div>
-                                    </form:form>
-                                </div>
-                                <div class="bottom text-center">
-                                    New here? <a href="registration"><b>Sign up</b></a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                </sec:authorize>
-                <sec:authorize access="isAuthenticated()">
-                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">User
-                        <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <div class="navbar-content">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <img src="${contextPath}/resources/img/avatar.jpg" alt="Alternate Text"
-                                                 class="img-responsive">
-                                            <p class="text-center small">
-                                                <a href="#">Change Photo</a></p>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <span>${user.username}</span>
-                                            <p class="text-muted small">${user.email}</p>
-                                            <div class="divider">
-                                            </div>
-                                            <a href="/profile" class="btn btn-primary btn-sm active">View Profile</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="navbar-footer">
-                                    <div class="navbar-footer-content">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <a href="#" class="btn btn-default btn-sm">Change Passowrd</a>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <a href="/logout"
-                                                   class="btn btn-default btn-sm pull-right">Sign Out</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                </sec:authorize>
-            </ul>
-        </div>
-    </div>
-</nav>
 <!-- Carousel
 =====================================================-->
 <div class="container">
@@ -199,7 +83,7 @@
             <div class="panel-body" name="mpop">
                 <c:forEach items="${items}" var="item">
                     <div class="col-md-3 col-sm-3">
-                        <a href="content_page.html">
+                        <a href="/content_page?uuid=${item.uuid}">
                             <img class="img-responsive img-galery img-hover" src="${item.show.image.medium}">
                         </a>
                         <div class="panel-footer">
@@ -220,17 +104,17 @@
                 <h3 class="page-header">Live</h3>
             </div>
             <div class="panel-body" name="live">
-                <c:forEach items="${items}" var="item">
+                <c:forEach items="${liveItems}" var="liveItem">
                     <div class="row">
                         <div class="col-sm-3">
                             <a href="#">
-                                <img class="img-responsive img-portfolio img-hover" src="${item.show.image.medium}">
+                                <img class="img-responsive img-portfolio img-hover" src="${liveItem.show.image.medium}">
                             </a>
                         </div>
                         <div class="col-rg-3">
                             <div class="record-text">
-                                <h5>${item.airtime}</h5>
-                                <h5>${item.show.name}</h5>
+                                <h5>${liveItem.airtime}</h5>
+                                <h5>${liveItem.show.name}</h5>
                             </div>
                         </div>
                     </div>

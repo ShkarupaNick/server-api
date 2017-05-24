@@ -16,4 +16,11 @@ public interface ItemService {
 
 
    public void deleteAll();
+
+   public Item getByUUID(String uuid);
+
+   public List<Item> getLiveItem();
+   public List<Item> getTop20MostViewedItems();
+
+   public void saveItem(Item item);
 }

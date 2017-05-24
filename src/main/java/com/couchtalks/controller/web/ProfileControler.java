@@ -1,4 +1,4 @@
-package com.couchtalks.controller;
+package com.couchtalks.controller.web;
 
 import com.couchtalks.entity.User;
 import com.couchtalks.service.UserService;
@@ -40,12 +40,8 @@ public class ProfileControler {
         } else {
             user = new User();
         }
-
-
         model.addAttribute("userForm", user);
-
-       /* model.addAttribute("profilePicture", user.getProfilePicture()!=null?new String(user.getProfilePicture()):defaultProfileImage);*/
-
+        model.addAttribute("user", user);
         return "profile";
     }
 
@@ -58,17 +54,29 @@ public class ProfileControler {
         User user = null;
         if (principal != null) {
             user = userService.findByUsername(principal.getName());
-            logger.debug("User from DB: "+ user);
             user.setEmail(userForm.getEmail());
             user.setUsername(userForm.getUsername());
-            if (null != userForm.getProfilePictureFile()) {
+
+            if (!userForm.getProfilePictureFile().isEmpty()) {
                 byte[] base64 = Base64.getEncoder().encode(userForm.getProfilePictureFile().getBytes());
                 user.setProfilePicture(base64);
             }
-            logger.debug("User from Form: "+ user);
-            model.addAttribute("userForm", user);
+            if (!user.getPassword().equals(userForm.getPassword())) {
+                user.setPassword(userForm.getPassword());
+                user.setRepeatPassword(userForm.getRepeatPassword());
+                model.addAttribute("userForm", user);
+                userService.save(user);
+                return "profile";
+            }
+
+                user.setRepeatPassword(user.getPassword());
+
+                model.addAttribute("userForm", user);
+                model.addAttribute("user", user);
+
+            userService.update(user);
+
         }
-        userService.update(user);
         return "profile";
     }
 }

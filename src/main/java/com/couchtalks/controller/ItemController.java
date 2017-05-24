@@ -74,17 +74,27 @@ public class ItemController {
             ErrorResponse error = new ErrorResponse();
             error.setErrorCode("204");
             error.setMessage("Data for date " + date + " already loaded. Please, specify another date.");
-            return new ResponseEntity<ErrorResponse>(error, headers, HttpStatus.OK);
+            return new ResponseEntity<ErrorResponse>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @RequestMapping(value = "/item/live", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity loadLiveItems() {
+        HttpHeaders headers = new HttpHeaders();
+        List<Item> items = itemService.getLiveItem();
+        if (items == null) {
+            ErrorResponse error = new ErrorResponse();
+            error.setErrorCode("204");
+            error.setMessage("Live items not found");
+            return new ResponseEntity<ErrorResponse>(error, headers, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<List<Item>>(items, headers, HttpStatus.OK);
     }
 
     public ResponseEntity deleteAll(){
         HttpHeaders headers = new HttpHeaders();
-
         itemService.deleteAll();
         return new ResponseEntity<Void>(headers, HttpStatus.OK);
-
     }
-
-
 }

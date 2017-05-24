@@ -46,6 +46,7 @@ public class Comment extends Entity {
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:sss", timezone = "Europe/Kiev")
     private Date date;
 
+
     public Integer getReportCnt() {
         return reportCnt;
     }
@@ -118,4 +119,15 @@ public class Comment extends Entity {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Comment{" +
+                ", item=" + item +
+                ", likeCnt=" + likeCnt +
+                ", reportCnt=" + reportCnt +
+                ", deleted=" + deleted +
+                ", text='" + text + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

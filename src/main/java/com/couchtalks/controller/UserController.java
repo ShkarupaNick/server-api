@@ -21,6 +21,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,8 +53,6 @@ public class UserController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity registrationJson(@RequestBody User user) {
-        logger.info(user);
-
         userService.save(user);
         securityService.autoLogin(user.getUsername(), user.getPassword());
         HttpHeaders headers = new HttpHeaders();
@@ -61,6 +61,7 @@ public class UserController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
+        logger.info("/registration GET");
         model.addAttribute("userForm", new User());
         return "registration";
     }
@@ -68,9 +69,8 @@ public class UserController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public String registration(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
+        logger.info("/registration POST");
         String password = userForm.getPassword();
-        logger.debug(userForm);
-
         validator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -81,11 +81,9 @@ public class UserController {
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         userForm.setRoles(roles);
-        logger.error(userForm);
-
         userService.save(userForm);
         securityService.autoLogin(userForm.getUsername(), password);
-        return "index";
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/user/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,7 +123,11 @@ public class UserController {
 
     @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
     public String login(Model model, Principal principal) {
-        List<Item> items = itemService.getByDate("2017-04-12");
+        logger.info("\"/\", \"/index\" GET");
+        SimpleDateFormat  df = new SimpleDateFormat("yyyy-MM-dd");
+        List<Item> items = itemService.getTop20MostViewedItems();
+        List<Item> liveItems = itemService.getLiveItem();
+        model.addAttribute("liveItems",liveItems);
         model.addAttribute("items", items);
         model.addAttribute("userForm", new User());
         if (principal != null) {
@@ -156,6 +158,4 @@ public class UserController {
         securityService.autoLogin(user.getUsername(), user.getPassword());
         return new ResponseEntity<String>("{\"SessionId\":\"" + RequestContextHolder.currentRequestAttributes().getSessionId() + "\"}", new HttpHeaders(), HttpStatus.OK);
     }
-
-
 }

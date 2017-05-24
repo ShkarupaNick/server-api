@@ -107,8 +107,24 @@ public class Item implements Serializable {
     private Set<Category> categories;
 
     @JsonIgnore
+    @Column(name = "viewsCnt", columnDefinition = "int4 default 0")
+    private Integer viewsCnt = 0;
+
+    @JsonIgnore
     @Transient
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    public Integer getViewsCnt() {
+        return viewsCnt==null?0:viewsCnt;
+    }
+
+    public void setViewsCnt(Integer viewsCnt) {
+        this.viewsCnt = viewsCnt;
+    }
+
+    public void addViewsCnt() {
+        setViewsCnt(getViewsCnt()+1);
+    }
 
     /**
      * 
@@ -380,4 +396,11 @@ public class Item implements Serializable {
         this.additionalProperties.put(name, value);
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 }

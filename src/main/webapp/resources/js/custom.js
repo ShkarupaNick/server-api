@@ -1,90 +1,147 @@
-function onLoadMostPopular() {
-    $.get("http://couchtalks.com:8080/item/list?date=2017-03-28", function (data) {
-        for (var item of data) {
-            var div = document.createElement("div");
-            div.setAttribute("class", "col-md-3 col-sm-3");
-            var a = document.createElement("a");
-            a.setAttribute("href", "content_page.html");
-            var img = document.createElement("img");
-            img.setAttribute("class", "img-responsive img-galery img-hover");
-            img.setAttribute("src", item.show.image.medium);
-            a.append(img);
-            div.append(a);
-            var pFooter = document.createElement("div");
-            pFooter.setAttribute("class", "panel-footer");
-            var h4 = document.createElement("h4");
-            h4.append(document.createTextNode("".concat(item.show.network.name)));
-            var h4_1 = document.createElement("h4");
-            h4_1.append(document.createTextNode(item.airtime));
-            var h5 = document.createElement("h5");
-            h5.append(document.createTextNode(item.show.name));
-            pFooter.append(h4);
-            pFooter.append(h4_1);
-            pFooter.append(h5);
-            div.append(pFooter);
-            $("[name='mpop2']").append(div);
+function loadCommentEvents() {
+    $(".like").click(function () {
+        var commentUUID = $(this).parent().parent().parent().attr('id');
+        var tempScrollTop = $(window).scrollTop();
+        var root = $(this);
+        if ($(this).attr('liked') == 'true') {
+            $(this).removeClass("glyphicon-heart");
+            $(this).addClass("glyphicon-heart-empty");
+            $(this).attr("liked", "false");
+            $.ajax({
+                type: "post",
+                url: "/comment/dislike",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    commentUUID: commentUUID,
+                    userId: $("#user").attr("userId")
+                }),
+                success: function (msg) {
+                    console.log(msg.likeCnt);
+                    root.parent().children().last().text(" " + msg.likeCnt);
+
+                },
+                error: function (xhr,
+                                 ajaxOptions,
+                                 thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        } else {
+            $(this).removeClass("glyphicon-heart-empty");
+            $(this).addClass("glyphicon-heart");
+            $(this).attr("liked", "true");
+            $.ajax({
+                type: "post",
+                url: "/comment/like",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    commentUUID: commentUUID,
+                    userId: $("#user").attr("userId")
+                }),
+                success: function (msg) {
+                    console.log(msg.likeCnt);
+                    root.parent().children().last().text(" " + msg.likeCnt);
+
+                },
+                error: function (xhr,
+                                 ajaxOptions,
+                                 thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
         }
-    }, "json");
-}
-
-function onLoadLive() {
-    $.get("http://couchtalks.com:8080/item/list?date=2017-03-28", function (data) {
-        for (var item of data) {
-            var div = document.createElement("div");
-            div.setAttribute("class", "row");
-            var col = document.createElement("div");
-            col.setAttribute("class", "col-sm-3");
-            var a = document.createElement("a");
-            a.setAttribute("href", "#");
-            var img = document.createElement("img");
-            img.setAttribute("class", "img-responsive img-portfolio img-hover");
-            img.setAttribute("src", item.show.image.medium);
-            a.append(img);
-            var div2 = document.createElement("div");
-            div2.setAttribute("class", "col-rg-3");
-            var rtext = document.createElement("div");
-            rtext.setAttribute("class", "record-text");
-            var h5_1 = document.createElement("h5");
-            h5_1.append(document.createTextNode("".concat(item.show.network.name, " ", item.airtime)));
-            var h5_2 = document.createElement("h5");
-            h5_2.append(document.createTextNode(item.show.name));
-            rtext.append(h5_1)
-            rtext.append(h5_2);
-            col.append(a);
-            div2.append(rtext);
-            div.append(col);
-            div.append(div2);
-            $("[name='live']").append(div);
-        }
-    }, "json");
-}
-
-
-$(function() {
-
-    // We can attach the `fileselect` event to all file inputs on the page
-    $(document).on('change', ':file', function() {
-        var input = $(this),
-            numFiles = input.get(0).files ? input.get(0).files.length : 1,
-            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-        input.trigger('fileselect', [numFiles, label]);
+        $(window).scrollTop(tempScrollTop);
     });
 
-    // We can watch for our custom `fileselect` event like this
-    $(document).ready( function() {
-        $(':file').on('fileselect', function(event, numFiles, label) {
 
-            var input = $(this).parents('.input-group').find(':text'),
-                log = numFiles > 1 ? numFiles + ' files selected' : label;
 
-            if( input.length ) {
-                input.val(log);
-            } else {
-                if( log ) alert(log);
-            }
 
+    $(".reply").click(function reply() {
+        var root = $(this);
+        $(this).parent().parent().parent().append("<div class='inputTextDiv'><textarea  class='form-control' name='addComment' rows='2'></textarea></div>");
+        $(this).parent().parent().parent().append("<button type='button' class='btn btn-default comment-button'>Submit</button>");
+        var button = $(this).parent().parent().parent().children().last();
+        button.click(function () {
+            console.log(getUrlParameter("uuid"));
+            console.log(root.parent().parent().parent().attr("id"));
+            console.log(root.parent().parent().parent().children("div").children("textarea").val());
+            $.ajax({
+                type: "post",
+                url: "/comment/save",
+                contentType: 'application/json',
+
+                data: JSON.stringify({
+                    "parent": {
+                        "uuid": root.parent().parent().parent().attr("id")
+                    },
+                    "item": {
+                        "uuid": getUrlParameter("uuid")
+                    },
+                    "text": root.parent().parent().parent().children("div").children("textarea").val()
+
+                }),
+                success: function (msg) {
+                    console.log(msg);
+                    button.prev().remove();
+                    var parent = button.parent();
+                    button.remove();
+                    parent.append("<div class='media'><div class='media-left'><a><img class='media-object img-rounded img-avatar' src='data:image/jpg;base64," + msg.user.profilePictureString + "'></a></div><div class='media-body' id='" + msg.uuid + "'><div class='media-heading'><div class='author'>" + msg.user.username + "</div><div class='metadata'><span class='date'>" + msg.date + "</span></div></div><div class='media-text text-left'>" + msg.text + "</div><div class='footer-comment'><span class='comment-reply'><a class='reply' style='cursor: pointer;'>reply </a><a liked='false' class='like glyphicon glyphicon-heart-empty'/><a> 0</a></span></div></div></div></div>")
+                },
+                error: function (xhr,
+                                 ajaxOptions,
+                                 thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
         });
     });
 
-});
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+}
+
+
+/*$(function() {
+
+ // We can attach the `fileselect` event to all file inputs on the page
+ $(document).on('change', ':file', function() {
+ var input = $(this),
+ numFiles = input.get(0).files ? input.get(0).files.length : 1,
+ label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+ input.trigger('fileselect', [numFiles, label]);
+ });
+
+ // We can watch for our custom `fileselect` event like this
+ $(document).ready( function() {
+ $(':file').on('fileselect', function(event, numFiles, label) {
+
+ var input = $(this).parents('.input-group').find(':text'),
+ log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+ if( input.length ) {
+ input.val(log);
+ } else
+ if( log ) alert(log);
+ }
+
+ });
+ });
+
+ });
+
+ */

@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,8 +16,8 @@ import java.util.UUID;
  * Created by ShkarupaN on 04.04.2017.
  */
 
-
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public class Entity {
 
     @Id
@@ -34,7 +35,7 @@ public class Entity {
     protected UUID uuid;
 
     @ManyToOne
-    @JsonIgnoreProperties({"password", "roles", "createdDate", "email", "facebookId", "twitterId" })
+    @JsonIgnoreProperties({"password", "roles", "createdDate", "email", "facebookId", "twitterId", "profilePicture"})
     protected User user;
 
     @CreatedDate
@@ -44,8 +45,20 @@ public class Entity {
     @LastModifiedDate
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
+
     @Version
     private Integer version;
+
+
+    private boolean deleted;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
     public Date getCreatedDate() {
         return createdDate;
@@ -85,5 +98,17 @@ public class Entity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Entity{" +
+                "uuid=" + uuid +
+                ", user=" + user +
+                ", createdDate=" + createdDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                ", version=" + version +
+                ", deleted=" + deleted +
+                '}';
     }
 }

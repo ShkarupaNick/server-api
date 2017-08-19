@@ -16,8 +16,8 @@
 
         <csrf disabled="true"/>
         <!--form-login login-processing-url="/login" authentication-failure-url="/index"/-->
-        <form-login default-target-url="/" authentication-failure-url="/index" login-processing-url="/login"
-                    username-parameter="username" password-parameter="password"/>
+        <form-login default-target-url="/" authentication-failure-url="/index" login-processing-url="/login2"
+                    username-parameter="email" password-parameter="password"/>
         <logout
                 logout-success-url="/"
                 logout-url="/logout"

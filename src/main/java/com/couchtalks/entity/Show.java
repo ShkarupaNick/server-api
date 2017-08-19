@@ -73,7 +73,8 @@ public class Show implements Serializable {
     @JsonProperty("genres")*/
 
     @JsonProperty("genres")
-    @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name="show_genres",
             joinColumns=@JoinColumn(name="show_uuid")

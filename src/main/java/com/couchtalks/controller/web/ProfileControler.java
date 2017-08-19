@@ -1,7 +1,9 @@
 package com.couchtalks.controller.web;
 
 import com.couchtalks.entity.User;
+import com.couchtalks.entity.web.UserForm;
 import com.couchtalks.service.UserService;
+import com.couchtalks.validator.ProfileValidator;
 import com.couchtalks.validator.RegistrationValidator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,54 +30,52 @@ public class ProfileControler {
     @Autowired
     private UserService userService;
     @Autowired
-    RegistrationValidator validator;
+    ProfileValidator validator;
 
 
     @RequestMapping(value = {"/profile"}, method = RequestMethod.GET)
     public String profile(Model model, Principal principal) {
         User user;
         if (principal != null) {
-            user = userService.findByUsername(principal.getName());
-            user.setRepeatPassword(user.getPassword());
+            user = userService.findByEmail(principal.getName());
         } else {
             user = new User();
         }
-        model.addAttribute("userForm", user);
+
+        UserForm userForm = new UserForm(user);
+        userForm.setPassword(null);
+        userForm.setRepeatPassword(null);
+
+        model.addAttribute("userForm", userForm);
         model.addAttribute("user", user);
         return "profile";
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.POST, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String singleFileUpload(@ModelAttribute("userForm") User userForm, Model model, Principal principal, BindingResult bindingResult) throws IOException {
+    public String singleFileUpload(@ModelAttribute("userForm") UserForm userForm, Model model, Principal principal, BindingResult bindingResult) throws IOException {
 
+        validator.validate(userForm, bindingResult);
         if (bindingResult.hasErrors()) {
             return "profile";
         }
         User user = null;
         if (principal != null) {
-            user = userService.findByUsername(principal.getName());
+            user = userService.findByEmail(principal.getName());
             user.setEmail(userForm.getEmail());
-            user.setUsername(userForm.getUsername());
-
             if (!userForm.getProfilePictureFile().isEmpty()) {
                 byte[] base64 = Base64.getEncoder().encode(userForm.getProfilePictureFile().getBytes());
                 user.setProfilePicture(base64);
             }
-            if (!user.getPassword().equals(userForm.getPassword())) {
-                user.setPassword(userForm.getPassword());
-                user.setRepeatPassword(userForm.getRepeatPassword());
-                model.addAttribute("userForm", user);
-                userService.save(user);
+            if (!userForm.getNewPassword().isEmpty()) {
+                user.setPassword(userForm.getNewPassword());
+                userForm.setRepeatPassword(null);
+                userForm.setNewPassword(null);
+                userForm.setPassword(null);
                 return "profile";
             }
-
-                user.setRepeatPassword(user.getPassword());
-
-                model.addAttribute("userForm", user);
-                model.addAttribute("user", user);
-
             userService.update(user);
-
+            model.addAttribute("userForm", userForm);
+            model.addAttribute("user", user);
         }
         return "profile";
     }

@@ -1,9 +1,14 @@
 package com.couchtalks.controller.web;
 
-import com.couchtalks.entity.ErrorResponse;
+import com.couchtalks.Utils;
 import com.couchtalks.entity.User;
+import com.couchtalks.entity.web.ajax.CreateCommentRequest;
+import com.couchtalks.entity.web.ajax.LikeSearchCriteria;
+import com.couchtalks.entity.ErrorResponse;
 import com.couchtalks.entity.web.Comment;
 import com.couchtalks.service.CommentService;
+import com.couchtalks.service.ItemService;
+import com.couchtalks.service.LikesService;
 import com.couchtalks.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Principal;
+import java.util.*;
 
 /**
  * Created by ShkarupaN on 09.04.2017.
@@ -35,13 +36,18 @@ public class CommentController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ItemService itemService;
+
+    @Autowired
+    private LikesService likesService;
 
     @RequestMapping(value = "/comment/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public
     @ResponseBody
     ResponseEntity listItems(@RequestParam(value = "itemId", required = false) String itemId, @RequestParam(value = "topN", required = false) Integer topN) throws Exception {
         HttpHeaders headers = new HttpHeaders();
-
+        logger.info(itemId + " "+ topN);
         try {
             List<Comment> comments = null;
             if (null == itemId) {
@@ -56,30 +62,86 @@ public class CommentController {
             }
             return new ResponseEntity<List<Comment>>(comments, headers, HttpStatus.OK);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return new ResponseEntity<ErrorResponse>(new ErrorResponse("204", e.getMessage(), sw.toString()), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ErrorResponse("204", e.getMessage(), Utils.parseException(e)), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    @Transactional
-    @RequestMapping(value = "/comment/save", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity registrationJson(@RequestBody Comment comment) {
-        logger.info(comment);
+    @RequestMapping(value = "/comment/test", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    ResponseEntity listItems() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-
         try {
-            /*User user= userService.findOne(comment.getUser().getId());
-            comment.setUser(user);*/
-            commentService.saveComment(comment);
+
+            Comment root = new Comment();
+
+            root.setText("Самый первый и крутой комменатрий, который все с удовольствием читают и ставят на него лайки. а также дают на него ответ в комментарии - комментария. И так пока ен надоест. Скорее всего прийдется пилить рекурсией. и это меня напрягает.");
+            root.setUser(userService.findByUsername("syma"));
+            root.setItem(itemService.getByUUID("c0a8143b-5dc6-152d-815d-c6a6182c001c"));
+
+            Comment child = new Comment();
+            child.setUser(userService.findByUsername("syma"));
+            child.setItem(itemService.getByUUID("c0a8143b-5dc6-152d-815d-c6a6182c001c"));
+            child.setText("bla bla bla bla bla bla");
+
+            Comment child2 = new Comment();
+            child2.setUser(userService.findByUsername("syma"));
+            child2.setItem(itemService.getByUUID("c0a8143b-5dc6-152d-815d-c6a6182c001c"));
+            child2.setText("12222222222222222222222 222222222222222222222222 222222222222222222222222222 2222222222222 2222222222222222222222222");
+
+            List<Comment> children = new ArrayList<>();
+            children.add(child);
+            children.add(child2);
+            root.setChildren(children);
+            commentService.saveComment(root);
+
             return new ResponseEntity<Void>(headers, HttpStatus.OK);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return new ResponseEntity<ErrorResponse>(new ErrorResponse("204", e.getMessage(), sw.toString()), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ErrorResponse("204", e.getMessage(), Utils.parseException(e)), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @RequestMapping(value = "/comment/save", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity saveComment(@RequestBody CreateCommentRequest commentRequest, Principal principal) {
+        HttpHeaders headers = new HttpHeaders();
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
+        logger.debug(user);
+        logger.debug(commentRequest);
+
+        try {
+            Comment comment = new Comment();
+            comment.setUser(user);
+            comment.setText(commentRequest.getText());
+            comment = commentService.saveComment(comment);
+
+            Comment parent = commentService.findOne(commentRequest.getParent().getUuid());
+
+            if(null!=parent){
+                parent.addChildren(comment);
+                commentService.saveComment(parent);
+            }
+            logger.debug(comment);
+            return new ResponseEntity<Comment> (comment, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ErrorResponse>(new ErrorResponse("204", e.getMessage(), Utils.parseException(e)), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/comment/like", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody Comment like(@RequestBody LikeSearchCriteria paramMap){
+        Comment comment = commentService.like(paramMap.getCommentUUID(), paramMap.getUserId());
+        logger.debug(comment);
+        return comment;
+    }
+
+    @RequestMapping(value = "/comment/dislike", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody Comment dislike(@RequestBody LikeSearchCriteria paramMap){
+        Comment comment = commentService.disLike(paramMap.getCommentUUID(), paramMap.getUserId());
+        logger.debug(comment);
+        return comment;
     }
 }

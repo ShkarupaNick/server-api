@@ -42,7 +42,7 @@ public class ItemController {
     @RequestMapping(value = "/item/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public
     @ResponseBody
-    ResponseEntity listItems(@RequestParam(value = "date",required = false) String date) throws Exception {
+    ResponseEntity listItems(@RequestParam(value = "date",required = false) String date, @RequestParam(value = "channel",required = false) String channel) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         List<Item> items;
         if (null==date){
@@ -56,6 +56,22 @@ public class ItemController {
         }
         return new ResponseEntity<List<Item>>(items, headers, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/item", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public
+    @ResponseBody
+    ResponseEntity getItem(@RequestParam(value = "uuid",required = true) String uuid) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        Item item =  itemService.getByUUID(uuid);
+        item.addViewsCnt();
+        if (item == null) {
+            logger.error("Items not found");
+            return new ResponseEntity<Item>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Item>(item, headers, HttpStatus.OK);
+    }
+
 
     @CrossOrigin
     @Transactional

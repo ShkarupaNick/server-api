@@ -1,6 +1,7 @@
 package com.couchtalks.entity.web;
 
 import com.couchtalks.entity.User;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -11,22 +12,12 @@ import javax.persistence.Entity;
 
 @Entity
 @Table(name = "likes")
+@Where(clause = "deleted='false'")
 
-public class Like  extends com.couchtalks.entity.web.Entity{
-
+public class Likes extends com.couchtalks.entity.web.Entity {
 
     @ManyToOne
     private Comment comment;
-
-    @PrePersist
-    protected void onCreate() {
-       comment.plusLikeCnt();
-    }
-    @PreRemove
-    protected void onRemove() {
-        comment.minusLikeCnt();
-    }
-
 
     public User getUser() {
         return user;
@@ -36,11 +27,4 @@ public class Like  extends com.couchtalks.entity.web.Entity{
         this.user = user;
     }
 
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
 }

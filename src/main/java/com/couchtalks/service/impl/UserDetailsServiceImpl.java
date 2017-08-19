@@ -3,6 +3,7 @@ package com.couchtalks.service.impl;
 import com.couchtalks.dao.UserDao;
 import com.couchtalks.entity.Role;
 import com.couchtalks.entity.User;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,19 +25,28 @@ import java.util.Set;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private final static Logger logger = Logger.getLogger(UserDetailsService.class);
+
+
     @Autowired
     private UserDao userDao;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUsername(username);
+        logger.error(username);
+        User user = userDao.findByEmail(username);
+        if (null==user){
+            return null;
+        }
+        logger.error("!~!!!!!~!~!~!~!~!"+ user);
+
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 }

@@ -3,6 +3,7 @@ package com.couchtalks.controller;
 import com.couchtalks.entity.Item;
 import com.couchtalks.entity.Role;
 import com.couchtalks.entity.User;
+import com.couchtalks.entity.web.UserForm;
 import com.couchtalks.service.ItemService;
 import com.couchtalks.service.SecurityService;
 import com.couchtalks.service.UserService;
@@ -62,15 +63,14 @@ public class UserController {
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
         logger.info("/registration GET");
-        model.addAttribute("userForm", new User());
+        model.addAttribute("userForm", new UserForm());
         return "registration";
     }
 
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String registration(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
+    public String registration(@ModelAttribute("userForm") UserForm userForm, BindingResult bindingResult, Model model) {
         logger.info("/registration POST");
-        String password = userForm.getPassword();
         validator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -80,9 +80,15 @@ public class UserController {
         role.setName("USER");
         Set<Role> roles = new HashSet<>();
         roles.add(role);
-        userForm.setRoles(roles);
-        userService.save(userForm);
-        securityService.autoLogin(userForm.getUsername(), password);
+
+        User user = new User();
+        user.setPassword(userForm.getPassword());
+        user.setEmail(userForm.getEmail());
+        user.setUsername(userForm.getUsername());
+
+        user.setRoles(roles);
+        userService.save(user);
+        securityService.autoLogin(userForm.getEmail(), userForm.getPassword());
         return "redirect:/";
     }
 
@@ -131,23 +137,29 @@ public class UserController {
         model.addAttribute("items", items);
         model.addAttribute("userForm", new User());
         if (principal != null) {
-            User user = userService.findByUsername(principal.getName());
+            User user = userService.findByEmail(principal.getName());
             model.addAttribute("user", user);
         }
         return "index";
     }
 
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String loginForm(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String loginForm(@ModelAttribute("userForm") UserForm userForm, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "index";
         }
-        securityService.autoLogin(userForm.getUsername(), userForm.getPassword());
+        logger.error(userForm);
+        securityService.autoLogin(userForm.getEmail(), userForm.getPassword());
         if (userForm != null) {
-            User user = userService.findByUsername(userForm.getUsername());
+            User user = userService.findByEmail(userForm.getEmail());
             model.addAttribute("user", user);
         }
+
+        List<Item> items = itemService.getTop20MostViewedItems();
+        List<Item> liveItems = itemService.getLiveItem();
+        model.addAttribute("items", items);
+        model.addAttribute("liveItems", liveItems);
         return "index";
     }
 

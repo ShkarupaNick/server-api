@@ -33,7 +33,7 @@ CREATE TABLE user_roles
 
 INSERT INTO users (username, password) VALUES ('syma', '123456');
 
-INSERT INTO roles (name) VALUES ('ROLE_USER');
-INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+INSERT INTO roles (id, name) VALUES (1, 'ROLE_USER');
+INSERT INTO roles (id, name) VALUES (2, 'ROLE_ADMIN');
 
 INSERT INTO user_roles VALUES  (1,2);

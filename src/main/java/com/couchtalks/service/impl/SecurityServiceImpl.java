@@ -44,6 +44,9 @@ public class SecurityServiceImpl implements SecurityService {
     public void autoLogin(String username, String password) {
         logger.info(username + ":" + password);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (userDetails==null){
+            return;
+        }
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         authenticationManager.authenticate(authenticationToken);

@@ -1,6 +1,7 @@
 package com.couchtalks.validator;
 
 import com.couchtalks.entity.User;
+import com.couchtalks.entity.web.UserForm;
 import com.couchtalks.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class RegistrationValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
 
-        User user = (User) target;
+        UserForm user = (UserForm) target;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "Required");
         if (user.getUsername().length() < 3 || user.getUsername().length() > 32) {
             errors.rejectValue("username", "Size.userForm.username");

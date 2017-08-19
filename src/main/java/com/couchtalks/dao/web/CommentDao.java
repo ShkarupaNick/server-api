@@ -18,11 +18,14 @@ public interface CommentDao extends JpaRepository<Comment, Long> {
     @Query(value = "SELECT c FROM Comment c WHERE c.item.uuid = :entityUUID")
     public List<Comment> findByEntityId(@Param("entityUUID") UUID entityUUID);
 
+    @Query(value = "SELECT c FROM Comment c WHERE c.uuid = :uuid")
+    public Comment findByUUID(@Param("uuid") UUID uuid);
+
+    @Query(value = "SELECT c FROM Comment c WHERE c.item.uuid = :entityUUID and c.parent is null")
+    public List<Comment> findRootEntityId(@Param("entityUUID") UUID entityUUID);
 
     @Query("SELECT c  FROM Comment c WHERE c.item.uuid = :entityUUID order by c.likeCnt desc")
     public List<Comment> findTopByEntityId(@Param("entityUUID") UUID entityUUID, Pageable pageable);
-
-
 
 
 }

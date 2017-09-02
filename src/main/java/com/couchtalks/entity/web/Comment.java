@@ -16,16 +16,6 @@ import java.util.*;
 @javax.persistence.Entity
 public class Comment extends Entity {
 
-    /*@ManyToOne
-    @JoinColumn(name = "parent_comment_uuid")
-    @JsonProperty
-    @JsonIgnoreProperties({"item", "likeCnt", "reportCnt", "deleted", "text", "date"})
-    Comment parentComment;
-
-
-    @OneToMany(mappedBy = "uuid", fetch = FetchType.EAGER)
-    Set<Comment> childComments = new HashSet<Comment>();*/
-
     @ManyToOne(optional = true)
     @JoinColumn(name = "parent_uuid", referencedColumnName = "uuid")
     @JsonProperty
@@ -62,10 +52,6 @@ public class Comment extends Entity {
     public List<Likes> likes;
 
     private String text;
-
-    @CreatedDate
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:sss", timezone = "Europe/Kiev")
-    private Date date;
 
     @Transient
     @JsonIgnore
@@ -124,14 +110,6 @@ public class Comment extends Entity {
         this.text = text;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public Integer getLikeCnt() {
         return likeCnt;
     }
@@ -180,14 +158,6 @@ public class Comment extends Entity {
         this.item = item;
     }
 
-
-    @PrePersist
-    private void onPrePersist() {
-        if (date == null) {
-            date = new Date();
-        }
-    }
-
     @Override
     public String toString() {
         return "Comment{" +
@@ -197,7 +167,6 @@ public class Comment extends Entity {
                 ", likeCnt=" + likeCnt +
                 ", reportCnt=" + reportCnt +
                 ", text='" + text + '\'' +
-                ", date=" + date +
                 '}';
     }
 }

@@ -63,26 +63,27 @@
                 </div>
             </sec:authorize>
             <div class="comments">
-                <sec:authorize access="isAuthenticated()">
-
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="media-object img-rounded img-avatar"
-                                 src="data:image/jpg;base64,<c:out value='${user.profilePictureString}'/>">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <div class="media-heading">
-                            <div class="form-group">
-                                <label for="exampleTextarea">Leave your comment here...</label><textarea
-                                    class="form-control" id="exampleTextarea"
-                                    rows="1"></textarea>
+                <ul class="media-list">
+                    <sec:authorize access="isAuthenticated()">
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object img-rounded img-avatar"
+                                     src="data:image/jpg;base64,<c:out value='${user.profilePictureString}'/>">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <div class="media-heading">
+                                <div class="author">${user.username}</div>
                             </div>
-
+                            <div class="inputTextDiv">
+                                <label for="addComment">Leave your comment here...</label>
+                                <textarea class="form-control" id="addComment" rows="2"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-default comment-button">Submit</button>
                         </div>
                     </div>
-                </sec:authorize>
-                <ul class="media-list">
+                    </sec:authorize>
                     <c:forEach var="comment" items="${comments}">
                         <div class="media">
                             <div class="media-left">
@@ -96,7 +97,7 @@
                                 <div class="media-heading">
                                     <div class="author">${comment.user.username}</div>
                                     <div class="metadata">
-                                        <span class="date">${comment.date}</span>
+                                        <span class="date">${comment.createdDate}</span>
                                     </div>
                                 </div>
                                 <div class="media-text text-left">${comment.text}</div>
@@ -125,17 +126,16 @@
 
                         <li class="media">
                             <div class="media-left">
-                                <a href="#">
+                                <a >
                                     <img class="media-object img-rounded img-avatar" src="data:image/jpg;base64,
                                     <c:out value='${comment.user.profilePictureString}'/>">
                                 </a>
                             </div>
-                            <div class="media-body">
-                                <div class="media-heading">
+                            <div class="media-body" id="${comment.uuid}">
+                                <div class="media-heading ">
                                     <div class="author">${comment.user.username}</div>
-                                    <div class="metadata">
-                                        <a href="#" class="glyphicon glyphicon-heart-empty"></a> 1333
-                                    </div>
+                                    <div class="metadata comment-reply">
+                                        <a ${comment.likedByCurrentUser?"liked='true'":"liked='false'"} class="topLike glyphicon ${comment.likedByCurrentUser?"glyphicon-heart":"glyphicon-heart-empty"}"></a> <a>${comment.likeCnt}</a> </div>
                                 </div>
                                 <div class="media-text text-left">${comment.text}</div>
                             </div>

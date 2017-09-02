@@ -1,6 +1,6 @@
 package com.couchtalks.controller;
 
-import com.couchtalks.dao.JacksonMapper;
+import com.couchtalks.JacksonMapper;
 import com.couchtalks.entity.Item;
 import com.couchtalks.service.ItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.couchtalks.dao;
+package com.couchtalks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

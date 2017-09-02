@@ -7,37 +7,34 @@
 		http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <http auto-config='true' disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint">
+    <!--http auto-config='true' disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint"-->
+    <http use-expressions="true" auto-config="true">
 
         <intercept-url pattern="/list" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')"/>
         <intercept-url pattern="/user/list" access="hasRole('ROLE_ADMIN')"/>
         <intercept-url pattern="/profile" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')"/>
 
-
         <csrf disabled="true"/>
         <!--form-login login-processing-url="/login" authentication-failure-url="/index"/-->
-        <form-login default-target-url="/" authentication-failure-url="/index" login-processing-url="/login2"
-                    username-parameter="email" password-parameter="password"/>
-        <logout
-                logout-success-url="/"
-                logout-url="/logout"
-                delete-cookies="JSESSIONID"/>
-
+        <!--form-login default-target-url="/" authentication-failure-url="/index" login-processing-url="/login2" username-parameter="email" password-parameter="password"/-->
+        <form-login login-page="/index" login-processing-url="/login" authentication-failure-url="/index?error"
+                    default-target-url="/index" username-parameter="email" password-parameter="password"/>
+        <logout logout-url="/logout" logout-success-url="/index?loggedOut" invalidate-session="true" delete-cookies="JSESSIONID"/>
+        <remember-me key="CoutchTalks"/>
     </http>
 
     <authentication-manager alias="authenticationManager">
         <authentication-provider user-service-ref="userDetailsServiceImpl">
-            <password-encoder ref="encoder"></password-encoder>
+            <password-encoder ref="encoder"/>
         </authentication-provider>
     </authentication-manager>
 
     <beans:bean id="userDetailsServiceImpl"
-                class="com.couchtalks.service.impl.UserDetailsServiceImpl"></beans:bean>
+                class="com.couchtalks.service.impl.UserDetailsServiceImpl"/>
 
-    <beans:bean id="encoder"
-                class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+    <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
         <beans:constructor-arg name="strength" value="11"/>
     </beans:bean>
 
-    <beans:bean id="authenticationEntryPoint" class="com.couchtalks.MyAuthenticationEntryPoint"/>
+    <beans:bean id="authenticationEntryPoint" class="com.couchtalks.security.MyAuthenticationEntryPoint"/>
 </beans:beans>

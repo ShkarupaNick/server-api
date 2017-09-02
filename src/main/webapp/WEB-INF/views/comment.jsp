@@ -15,7 +15,7 @@
                     <div class="media-heading">
                         <div class="author">${comment.user.username}</div>
                         <div class="metadata">
-                            <span class="date">${comment.date}</span>
+                            <span class="date">${comment.createdDate}</span>
                         </div>
                     </div>
                     <div class="media-text text-left">${comment.text}</div>

@@ -1,9 +1,9 @@
---DROP TABLE "security".roles;
---DROP TABLE "security".users;
+--DROP TABLE "com.couchtalks.security".roles;
+--DROP TABLE "com.couchtalks.security".users;
 
 
---DROP TABLE "security".roles;
---DROP TABLE "security".users;
+--DROP TABLE "com.couchtalks.security".roles;
+--DROP TABLE "com.couchtalks.security".users;
 
 
 /*CREATE TABLE users
@@ -25,8 +25,8 @@ CREATE TABLE user_roles
 (
   user_id INT NOT NULL,
   role_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES security.users (id),
-  FOREIGN KEY (role_id) REFERENCES security.roles (id),
+  FOREIGN KEY (user_id) REFERENCES com.couchtalks.security.users (id),
+  FOREIGN KEY (role_id) REFERENCES com.couchtalks.security.roles (id),
 
   UNIQUE (user_id, role_id)
 );*/

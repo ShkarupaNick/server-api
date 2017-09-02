@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,18 +47,19 @@ public class SecurityServiceImpl implements SecurityService {
         logger.info(username + ":" + password);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (userDetails==null){
-            return;
+            throw new BadCredentialsException("The username you entered are not correct. Please try again.");
         }
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-        authenticationManager.authenticate(authenticationToken);
-
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+       try {
+           authenticationManager.authenticate(authenticationToken);
+       } catch (InternalAuthenticationServiceException e){
+           throw new BadCredentialsException("The username or password you entered are not correct. Please try again.");
+       }
         if (authenticationToken.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             logger.debug(String.format("Successfully %s auto logged in", username));
         }
     }
-
 
     @Override
     public void logout() {

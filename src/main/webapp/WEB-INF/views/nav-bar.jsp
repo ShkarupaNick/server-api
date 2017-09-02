@@ -40,8 +40,8 @@
 
                 <sec:authorize access="isAnonymous()">
                     <li><a href="registration">Sign up</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Sign in</b> <span
+                    <li class="${not empty SPRING_SECURITY_LAST_EXCEPTION.message?"dropdown open":"dropdown"}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ${not empty SPRING_SECURITY_LAST_EXCEPTION.message?"aria-expanded=\"true\"":""}><b>Sign in</b> <span
                                 class="caret"></span></a>
                         <ul id="login-dp" class="dropdown-menu">
                             <li>
@@ -57,19 +57,26 @@
                                         <form:form method="POST" class="form" role="form" action="login" 
                                                    modelAttribute="userForm" accept-charset="UTF-8" id="login-nav">
                                                 <div class="form-group">
-                                                    <label class="sr-only" for="exampleInputLogin2">email</label>
-                                                    <form:input path="email" id="exampleInputLogin2" name="email"
+                                                    <label class="sr-only" for="inputLogin">email</label>
+                                                    <form:input path="email" id="inputLogin" name="email"
                                                                 type="text"
                                                                 class="form-control" placeholder="Email"
                                                                 autofocus="true"/>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="sr-only" for="exampleInputPassword2">Password</label>
-                                                    <form:input path="password" name="password" type="password"
+                                                    <label class="sr-only" for="inputPassword">Password</label>
+                                                    <form:password path="password" name="password"
                                                                 class="form-control"
-                                                                id="exampleInputPassword2"
+                                                                id="inputPassword"
                                                                 placeholder="Password"/>
+                                                    <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
+                                                        <div class="alert alert-danger">
+                                                            ${SPRING_SECURITY_LAST_EXCEPTION.message}
+                                                        </div>
+                                                    </c:if>
+
+
                                                     <div class="help-block text-right"><a href="">Forget the password
                                                         ?</a>
                                                     </div>
@@ -80,7 +87,7 @@
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox"> keep me logged-in
+                                                    <input type="checkbox" name="remember-me"> keep me logged-in
                                                 </label>
                                             </div>
                                         </form:form>
@@ -111,3 +118,4 @@
         </div>
     </div>
 </nav>
+<c:remove var = "SPRING_SECURITY_LAST_EXCEPTION" scope = "session" />

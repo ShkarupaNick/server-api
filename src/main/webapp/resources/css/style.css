@@ -320,7 +320,7 @@ footer {
 
 
 .inputTextDiv {
-    margin-right: 15px;
+    /*margin-right: 15px;*/
     margin-top: 5px;
 }
 .inputTextDiv > textarea {
@@ -340,4 +340,8 @@ footer {
 .comment-button:focus{
     background-color: white;
     color: Black;
+}
+
+.comments{
+    padding: 10px;
 }

@@ -1,6 +1,7 @@
 package com.couchtalks.entity.web;
 
 import com.couchtalks.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -40,6 +41,7 @@ public class Entity {
 
     @CreatedDate
     @Column(name = "created_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:sss", timezone = "Europe/Kiev")
     private Date createdDate;
 
     @LastModifiedDate

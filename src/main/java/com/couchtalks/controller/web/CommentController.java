@@ -1,6 +1,7 @@
 package com.couchtalks.controller.web;
 
 import com.couchtalks.Utils;
+import com.couchtalks.entity.Item;
 import com.couchtalks.entity.User;
 import com.couchtalks.entity.web.ajax.CreateCommentRequest;
 import com.couchtalks.entity.web.ajax.LikeSearchCriteria;
@@ -116,6 +117,8 @@ public class CommentController {
             Comment comment = new Comment();
             comment.setUser(user);
             comment.setText(commentRequest.getText());
+            Item item = itemService.getByUUID(commentRequest.getItem().getUuid().toString());
+            comment.setItem(item);
             comment = commentService.saveComment(comment);
 
             Comment parent = commentService.findOne(commentRequest.getParent().getUuid());

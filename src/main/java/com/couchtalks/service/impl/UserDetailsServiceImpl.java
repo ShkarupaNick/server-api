@@ -5,6 +5,7 @@ import com.couchtalks.entity.Role;
 import com.couchtalks.entity.User;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,16 +35,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.error(username);
+        logger.debug(username);
         User user = userDao.findByEmail(username);
         if (null==user){
-            return null;
+            throw new BadCredentialsException("The username or password you entered are not correct. Please try again.");
         }
-        logger.error("!~!!!!!~!~!~!~!~!"+ user);
-
-
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
         }
